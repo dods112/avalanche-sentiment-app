@@ -212,6 +212,28 @@ with tab_deep_dive:
 # TAB 3: AI INSIGHTS (chatbot + exec summary + pdf)
 # ===========================================================
 with tab_ai:
+    st.markdown("""
+<style>
+/* Pin the chat input to the very bottom of the browser window,
+   like a real chat app, even though it's inside a tab. */
+div[data-testid="stChatInput"] {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #0E1117;
+    border-top: 1px solid #2A3441;
+    z-index: 999;
+}
+/* Leave room at the bottom so the last chat message isn't hidden behind the input */
+.chat-scroll-spacer {
+    height: 90px;
+}
+</style>
+""", unsafe_allow_html=True)
+
     st.subheader("💬 Ask About the Data")
     st.caption('Try: "Which product has the most negative reviews?" or "What\'s the trend over time?"')
 
@@ -247,6 +269,15 @@ Answer concisely and reference specific products or trends where relevant."""
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
+
+    # Anchor element + auto-scroll so the latest message is always in view
+    st.markdown('<div class="chat-scroll-spacer" id="chat-bottom"></div>', unsafe_allow_html=True)
+    st.markdown("""
+<script>
+    var anchor = window.parent.document.getElementById("chat-bottom");
+    if (anchor) { anchor.scrollIntoView({behavior: "smooth", block: "end"}); }
+</script>
+""", unsafe_allow_html=True)
 
     # Chat input pinned at the bottom, like a real chat app
     user_question = st.chat_input("Type a question about the reviews...")
