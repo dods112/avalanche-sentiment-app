@@ -258,10 +258,15 @@ Answer concisely and reference specific products or trends where relevant."""
             st.session_state.chat_history = []
             st.rerun()
 
-    # Conversation history renders below the input, most recent at the bottom
-    for msg in st.session_state.chat_history:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    # Conversation history renders below the input, newest exchange right under the input box.
+    # Group into (question, answer) pairs first, then reverse pair order —
+    # this keeps each question above its own answer while showing newest first.
+    history = st.session_state.chat_history
+    pairs = [history[i:i+2] for i in range(0, len(history), 2)]
+    for pair in reversed(pairs):
+        for msg in pair:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
 
     st.divider()
     st.subheader("📋 Executive Summary")
